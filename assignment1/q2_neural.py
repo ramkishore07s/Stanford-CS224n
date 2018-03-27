@@ -73,7 +73,7 @@ def forward_backward_prop(X, labels, params, dimensions):
     gradb2 = np.sum(y_diff, axis=0)
     gradW2 = np.dot(hidden_output.T, y_diff)
 
-    dce_da1 = np.dot(y_diff, W2.T) * sig_grad
+    dce_da1 = sig_grad * np.dot(y_diff, W2.T)
 
     gradb1 = np.sum(dce_da1, axis=0)
     gradW1 = np.dot(X.T, dce_da1)
