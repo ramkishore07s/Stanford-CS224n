@@ -11,19 +11,21 @@ from utils.parser_utils import minibatches, load_and_preprocess_data
 class Config(object):
     """Holds model hyperparams and data information.
 
-    The config class is used to store various hyperparameters and dataset
+n    The config class is used to store various hyperparameters and dataset
     information parameters. Model objects are passed a Config() object at
     instantiation. They can then call self.config.<hyperparameter_name> to
     get the hyperparameter settings.
     """
     n_features = 36
     n_classes = 3
-    dropout = 0.5  # (p_drop in the handout)
+    dropout = 0.6  # (p_drop in the handout)
     embed_size = 50
-    hidden_size = 200
+    hidden_size = 400
     batch_size = 1024
     n_epochs = 10
     lr = 0.0005
+    my_additions = True
+    my_hidden_size = 50
 
 
 class ParserModel(Model):
@@ -147,19 +149,41 @@ class ParserModel(Model):
         x = self.add_embedding()
         ### YOUR CODE HERE
         init_weights = xavier_weight_init()
-        
-        with tf.variable_scope('parser') as scope:
-            W = tf.Variable(init_weights([self.config.n_features * self.config.embed_size,
-                                                self.config.hidden_size]))
-            b1 = tf.Variable(init_weights([self.config.hidden_size]))
 
-            U = tf.Variable(init_weights([self.config.hidden_size, self.config.n_classes]))
-            b2 = tf.Variable(init_weights([self.config.n_classes]))
-            
-            h = tf.nn.relu(tf.matmul(x, W) + b1)
-            h_drop = tf.nn.dropout(h, 1 - self.config.dropout)
+        if not self.config.my_additions:
+            with tf.variable_scope('parser') as scope:
+                W = tf.Variable(init_weights([self.config.n_features * self.config.embed_size,
+                                                    self.config.hidden_size]))
+                b1 = tf.Variable(init_weights([self.config.hidden_size]))
 
-            pred = tf.matmul(h_drop, U) + b2
+                U = tf.Variable(init_weights([self.config.hidden_size, self.config.n_classes]))
+                b2 = tf.Variable(init_weights([self.config.n_classes]))
+
+                h = tf.nn.relu(tf.matmul(x, W) + b1)
+                h_drop = tf.nn.dropout(h, 1 - self.config.dropout)
+
+                pred = tf.matmul(h_drop, U) + b2
+        else:
+            with tf.variable_scope('parser') as scope:
+                W = tf.Variable(init_weights([self.config.n_features * self.config.embed_size,
+                                                    self.config.hidden_size]))
+                b1 = tf.Variable(init_weights([self.config.hidden_size]))
+
+                H = tf.Variable(init_weights([self.config.hidden_size,
+                                              self.config.my_hidden_size]))
+                bh = tf.Variable(init_weights([self.config.my_hidden_size]))
+
+                U = tf.Variable(init_weights([self.config.my_hidden_size,
+                                              self.config.n_classes]))
+                b2 = tf.Variable(init_weights([self.config.n_classes]))
+
+                h = tf.nn.relu(tf.matmul(x, W) + b1)
+                h_drop = tf.nn.dropout(h, 1 - self.config.dropout)
+
+                h2 = tf.nn.relu(tf.matmul(h_drop, H) + bh)
+                h2_drop = tf.nn.dropout(h2, 1 - self.config.dropout)
+
+                pred = tf.matmul(h2_drop, U) + b2
         ### END YOUR CODE
         return pred
 
