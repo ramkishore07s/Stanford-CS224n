@@ -20,11 +20,11 @@ n    The config class is used to store various hyperparameters and dataset
     n_classes = 3
     dropout = 0.6  # (p_drop in the handout)
     embed_size = 50
-    hidden_size = 1000
+    hidden_size = 850
     batch_size = 1024
     n_epochs = 10
     lr = 0.0005
-    my_additions = True
+    my_additions = False
     my_hidden_size = 400
 
 
@@ -159,7 +159,7 @@ class ParserModel(Model):
                 U = tf.Variable(init_weights([self.config.hidden_size, self.config.n_classes]))
                 b2 = tf.Variable(init_weights([self.config.n_classes]))
 
-                h = tf.nn.relu(tf.matmul(x, W) + b1)
+                h = tf.pow((tf.matmul(x, W) + b1), [3])
                 h_drop = tf.nn.dropout(h, 1 - self.config.dropout)
 
                 pred = tf.matmul(h_drop, U) + b2
