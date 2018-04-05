@@ -20,12 +20,12 @@ n    The config class is used to store various hyperparameters and dataset
     n_classes = 3
     dropout = 0.6  # (p_drop in the handout)
     embed_size = 50
-    hidden_size = 400
+    hidden_size = 1000
     batch_size = 1024
     n_epochs = 10
     lr = 0.0005
     my_additions = True
-    my_hidden_size = 50
+    my_hidden_size = 400
 
 
 class ParserModel(Model):
@@ -117,7 +117,7 @@ class ParserModel(Model):
         """
         ### YOUR CODE HERE
         with tf.variable_scope('parser') as scope:
-            pretrained = tf.Variable(self.pretrained_embeddings)
+            pretrained = tf.Variable(self.pretrained_embeddings, trainable=True)
             output = tf.nn.embedding_lookup(pretrained, self.input_placeholder)
             embeddings = tf.reshape(output, [-1,
                                              self.config.n_features * self.config.embed_size])
