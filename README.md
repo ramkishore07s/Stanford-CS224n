@@ -1,3 +1,5 @@
 # Stanford-CS224n
-
-Find written solutions in assignment\<x\>/written solutions.pdf and the corresponding questions in assignment\<x\>/questions.pdf
+---
+Assignment solutions for the course CS224n: NLP with Deep Learning.
+---
+<a href="http://web.stanford.edu/class/cs224n/syllabus.html">Access the course materials here.</a>
