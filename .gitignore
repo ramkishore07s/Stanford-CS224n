@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.npy
 *~
+notes/
 
 # C extensions
 *.so
