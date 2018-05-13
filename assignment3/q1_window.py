@@ -37,7 +37,7 @@ class Config:
     n_word_features = 2 # Number of features for every word in the input.
     window_size = 1 # The size of the window to use.
     ### YOUR CODE HERE
-    n_window_features = 0 # The total number of features used for each window.
+    n_window_features = n_word_features * (2 * window_size + 1) # The total number of features used for each window.
     ### END YOUR CODE
     n_classes = 5
     dropout = 0.5
@@ -93,12 +93,24 @@ def make_windowed_data(data, start, end, window_size = 1):
          ...
          ]
     """
-
+    
     windowed_data = []
     for sentence, labels in data:
-		### YOUR CODE HERE (5-20 lines)
+	### YOUR CODE HERE (5-20 lines)
+        length = len(sentence)
 
-		### END YOUR CODE
+        for num in range(length):
+            features = []
+            for n in range(num-window_size, num+window_size+1):
+                if n < 0:
+                    features.extend(start)
+                elif n >= length:
+                    features.extend(end)
+                else:
+                    features.extend(sentence[n])
+
+            windowed_data.append((features, labels[num]))
+        ### END YOUR CODE
     return windowed_data
 
 class WindowModel(NERModel):
@@ -130,7 +142,9 @@ class WindowModel(NERModel):
         (Don't change the variable names)
         """
         ### YOUR CODE HERE (~3-5 lines)
-
+        self.input_placeholder = tf.placeholder(tf.int32, shape=[None, n_window_features])
+        self.labels_placeholder = tf.placeholder(tf.int32, shape=[None,])
+        self.dropout_placeholder = tf.placeholder(tf.float32, shape=[])
         ### END YOUR CODE
 
     def create_feed_dict(self, inputs_batch, labels_batch=None, dropout=1):
@@ -153,7 +167,9 @@ class WindowModel(NERModel):
             feed_dict: The feed dictionary mapping from placeholders to values.
         """
         ### YOUR CODE HERE (~5-10 lines)
-         
+        feed_dict = {self.input_placeholder: inputs_batch, self.dropout_placeholder: dropout}
+        if labels_batch:
+            feed_dict{self.labels_placeholder: labels_batch}
         ### END YOUR CODE
         return feed_dict
 
@@ -174,9 +190,8 @@ class WindowModel(NERModel):
             embeddings: tf.Tensor of shape (None, n_window_features*embed_size)
         """
         ### YOUR CODE HERE (!3-5 lines)
-                                                             
-                                  
-                                                                                                                 
+        embeddings = tf.Variable(self.pretrained_embeddings)
+        embeddings = tf.nn.embedding_lookup(                                                 
         ### END YOUR CODE
         return embeddings
 
